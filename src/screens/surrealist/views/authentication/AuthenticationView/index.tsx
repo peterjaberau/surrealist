@@ -43,7 +43,7 @@ export function AuthenticationView() {
 			pb="lg"
 			pl={{ base: "lg", md: 0 }}
 		>
-			<PanelGroup direction="horizontal">
+			<PanelGroup direction="horizontal" style={{ gap: "10px" }}>
 				<Panel minSize={15}>
 					<LevelPanelLazy
 						level="ROOT"

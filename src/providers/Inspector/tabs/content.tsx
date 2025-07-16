@@ -9,6 +9,7 @@ import { useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
 import { iconWarning } from "~/util/icons";
 import { useInspector } from "..";
+import { Stack, Box } from "@chakra-ui/react"
 
 export interface ContentTabProps {
 	value: string;
@@ -27,7 +28,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 	);
 
 	return (
-		<>
+		<Stack height='100%' flex={1} flexDirection="column" display="flex">
 			{error && (
 				<Alert
 					icon={<Icon path={iconWarning} />}
@@ -59,6 +60,6 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 				inline
 				withApply
 			/>
-		</>
+		</Stack>
 	);
 }

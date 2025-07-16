@@ -8,6 +8,7 @@ import { compression } from "vite-plugin-compression2";
 import { ViteImageOptimizer as images } from "vite-plugin-image-optimizer";
 import { Mode, plugin as markdown } from "vite-plugin-markdown";
 import { surreal, version } from "./package.json";
+import { codeInspectorPlugin } from 'code-inspector-plugin';
 
 const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
@@ -32,6 +33,11 @@ export default defineConfig(({ mode }) => {
 
 	// Define base plugins
 	const plugins: PluginOption[] = [
+		codeInspectorPlugin({
+			bundler: 'vite',
+			showSwitch: true,
+			editor: 'idea'
+		}),
 		images(),
 		react(),
 		markdown({

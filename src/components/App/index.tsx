@@ -1,6 +1,7 @@
 import { isDesktop } from "~/adapter";
 import { DesignerProvider } from "~/providers/Designer";
 import { InspectorProvider } from "~/providers/Inspector";
+import { ChakraProvider } from "~/providers/chakra/chakra-provider"
 import { SurrealistScreen } from "~/screens/surrealist";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
@@ -25,11 +26,13 @@ import { Settings } from "./settings";
 
 function Surrealist() {
 	return (
-		<InspectorProvider>
-			<DesignerProvider>
-				<SurrealistScreen />
-			</DesignerProvider>
-		</InspectorProvider>
+		<ChakraProvider>
+			<InspectorProvider>
+				<DesignerProvider>
+					<SurrealistScreen />
+				</DesignerProvider>
+			</InspectorProvider>
+		</ChakraProvider>
 	);
 }
 
