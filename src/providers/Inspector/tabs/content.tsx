@@ -1,4 +1,4 @@
-import { Alert, Paper } from "@mantine/core";
+import { Alert } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -41,10 +41,11 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 				</Alert>
 			)}
 
-			<Paper
+			<Box
 				flex="1 0 0"
-				mih={0}
+				minHeight={0}
 				p="xs"
+				border="1px solid {colors.border}"
 			>
 				<CodeEditor
 					h="100%"
@@ -53,7 +54,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 					lineNumbers={hasLineNumbers}
 					extensions={extensions}
 				/>
-			</Paper>
+			</Box>
 
 			<SaveBox
 				handle={saveHandle}

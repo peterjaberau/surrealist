@@ -15,6 +15,7 @@ import {
 
 import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
 
+import { Button as ChakraButton, IconButton } from "@chakra-ui/react";
 import {
 	iconChevronDown,
 	iconChevronRight,
@@ -26,6 +27,17 @@ import {
 	iconServer,
 	iconTable,
 } from "~/util/icons";
+
+import {
+	LuChevronRight as IconChevronRight,
+	LuChevronDown as IconChevronDown,
+	LuCopy as IconCopy,
+	LuDelete as IconDelete,
+	LuPlus as IconPlus,
+	LuRefreshCw as IconRefresh,
+	LuServer as IconServer,
+	LuTable as IconTable,
+} from "react-icons/lu"
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";

@@ -1,134 +1,119 @@
+import { iconExplorer } from "~/util/icons"
+import { Box as ChakraBox, Button as ChakraButton, ButtonGroup, HStack, Text as ChakraText } from "@chakra-ui/react"
 import {
-	iconChevronRight,
-	iconDesigner,
-	iconDownload,
-	iconExplorer,
-	iconOpen,
-	iconPlus,
-	iconTable,
-	iconUpload,
-} from "~/util/icons";
+	LuChevronRight as IconChevronRight,
+	LuDownload as IconDownload,
+	LuLayoutDashboard as IconExplorer,
+	LuFolderOpen as IconOpen,
+	LuPlus as IconPlus,
+	LuTable as IconTable,
+	LuUpload as IconUpload,
+} from "react-icons/lu"
+import { SiMaterialdesignicons as IconDesign } from "react-icons/si"
 
-import { Box, Button, Group, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { memo, useState } from "react";
-import { Panel, PanelGroup } from "react-resizable-panels";
-import { adapter } from "~/adapter";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
-import { Introduction } from "~/components/Introduction";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
-import { useEventSubscription } from "~/hooks/event";
-import { usePanelMinSize } from "~/hooks/panels";
-import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
-import { useStable } from "~/hooks/stable";
-import { useDesigner } from "~/providers/Designer";
-import { TablesPane } from "~/screens/surrealist/components/TablesPane";
-import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
-import { ActivateDatabaseEvent, DisconnectedEvent } from "~/util/global-events";
-import { dispatchIntent } from "~/util/intents";
-import { syncConnectionSchema } from "~/util/schema";
-import { CreatorDrawer } from "../CreatorDrawer";
-import { ExplorerPane } from "../ExplorerPane";
+import { useDisclosure } from "@mantine/hooks"
+import { memo, useState } from "react"
+import { Panel, PanelGroup } from "react-resizable-panels"
+import { adapter } from "~/adapter"
+import { Entry } from "~/components/Entry"
+import { Introduction } from "~/components/Introduction"
+import { PanelDragger } from "~/components/Pane/dragger"
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection"
+import { useEventSubscription } from "~/hooks/event"
+import { usePanelMinSize } from "~/hooks/panels"
+import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing"
+import { useStable } from "~/hooks/stable"
+import { useDesigner } from "~/providers/Designer"
+import { TablesPane } from "~/screens/surrealist/components/TablesPane"
+import { useConfigStore } from "~/stores/config"
+import { useInterfaceStore } from "~/stores/interface"
+import { ActivateDatabaseEvent, DisconnectedEvent } from "~/util/global-events"
+import { dispatchIntent } from "~/util/intents"
+import { syncConnectionSchema } from "~/util/schema"
+import { CreatorDrawer } from "../CreatorDrawer"
+import { ExplorerPane } from "../ExplorerPane"
 
-const TablesPaneLazy = memo(TablesPane);
-const ExplorerPaneLazy = memo(ExplorerPane);
+const TablesPaneLazy = memo(TablesPane)
+const ExplorerPaneLazy = memo(ExplorerPane)
 
 export function ExplorerView() {
-	const { updateConnection } = useConfigStore.getState();
-	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
-	const { design } = useDesigner();
+	const { updateConnection } = useConfigStore.getState()
+	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState()
+	const { design } = useDesigner()
 
-	const isConnected = useIsConnected();
-	const explorerTableList = useConnection((c) => c?.explorerTableList);
-	const [connection] = useConnectionAndView();
-	const openTableCreator = useRequireDatabase(_openTableCreator);
-	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
-	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
+	const isConnected = useIsConnected()
+	const explorerTableList = useConnection((c) => c?.explorerTableList)
+	const [connection] = useConnectionAndView()
+	const openTableCreator = useRequireDatabase(_openTableCreator)
+	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"))
+	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"))
 
-	const [activeTable, setActiveTable] = useState<string>();
-	const [isCreating, isCreatingHandle] = useDisclosure();
-	const [creatorTable, setCreatorTable] = useState<string>();
-	const [creatorContent, setCreatorContent] = useState<any>();
+	const [activeTable, setActiveTable] = useState<string>()
+	const [isCreating, isCreatingHandle] = useDisclosure()
+	const [creatorTable, setCreatorTable] = useState<string>()
+	const [creatorContent, setCreatorContent] = useState<any>()
 
 	const openCreator = useStable((table?: string, content?: any) => {
-		setCreatorTable(table || activeTable);
-		setCreatorContent(content);
-		isCreatingHandle.open();
-	});
+		setCreatorTable(table || activeTable)
+		setCreatorContent(content)
+		isCreatingHandle.open()
+	})
 
 	const buildContextMenu = useStable((table: string) => [
 		{
 			key: "open",
 			title: "View records",
-			icon: <Icon path={iconTable} />,
+			icon: <IconTable />,
 			onClick: () => setActiveTable(table),
 		},
 		{
 			key: "new",
 			title: "Create new record",
-			icon: <Icon path={iconPlus} />,
+			icon: <IconPlus />,
 			onClick: () => openCreator(table),
 		},
 		{
 			key: "design",
 			title: "Open designer",
-			icon: <Icon path={iconDesigner} />,
+			icon: <IconDesign />,
 			onClick: () => design(table),
 		},
-	]);
+	])
 
 	const closeTableList = useStable(() => {
-		if (!connection) return;
+		if (!connection) return
 
 		updateConnection({
 			id: connection,
 			explorerTableList: false,
-		});
-	});
+		})
+	})
 
 	const resetTable = useStable(() => {
-		isCreatingHandle.close();
-		setActiveTable(undefined);
-	});
+		isCreatingHandle.close()
+		setActiveTable(undefined)
+	})
 
-	useEventSubscription(DisconnectedEvent, resetTable);
-	useEventSubscription(ActivateDatabaseEvent, resetTable);
+	useEventSubscription(DisconnectedEvent, resetTable)
+	useEventSubscription(ActivateDatabaseEvent, resetTable)
 
 	useIntent("explore-table", ({ table }) => {
-		setActiveTable(table);
-	});
+		setActiveTable(table)
+	})
 
 	useViewFocus("explorer", () => {
-		syncConnectionSchema();
-	});
+		syncConnectionSchema()
+	})
 
-	const [minSize, ref] = usePanelMinSize(275);
+	const [minSize, ref] = usePanelMinSize(275)
 
 	return (
 		<>
-			<Box
-				h="100%"
-				ref={ref}
-				pr="lg"
-				pb="lg"
-				pl={{ base: "lg", md: 0 }}
-			>
-				<PanelGroup
-					direction="horizontal"
-					style={{ opacity: minSize === 0 ? 0 : 1 }}
-				>
+			<ChakraBox h="100%" ref={ref} >
+				<PanelGroup direction="horizontal" style={{ opacity: minSize === 0 ? 0 : 1 }}>
 					{(explorerTableList || !activeTable) && (
 						<>
-							<Panel
-								defaultSize={minSize}
-								minSize={minSize}
-								maxSize={35}
-								id="tables"
-								order={1}
-							>
+							<Panel defaultSize={minSize} minSize={minSize} maxSize={35} id="tables" order={1}>
 								<TablesPaneLazy
 									icon={iconExplorer}
 									activeTable={activeTable}
@@ -139,8 +124,8 @@ export function ExplorerView() {
 									extraSection={
 										<>
 											<Entry
-												leftSection={<Icon path={iconUpload} />}
-												rightSection={<Icon path={iconChevronRight} />}
+												leftSection={<IconUpload />}
+												rightSection={<IconChevronRight />}
 												onClick={exportDatabase}
 												style={{ flexShrink: 0 }}
 												bg="transparent"
@@ -148,8 +133,8 @@ export function ExplorerView() {
 												Export database
 											</Entry>
 											<Entry
-												leftSection={<Icon path={iconDownload} />}
-												rightSection={<Icon path={iconChevronRight} />}
+												leftSection={<IconDownload />}
+												rightSection={<IconChevronRight />}
 												onClick={importDatabase}
 												style={{ flexShrink: 0 }}
 												bg="transparent"
@@ -163,16 +148,9 @@ export function ExplorerView() {
 							<PanelDragger />
 						</>
 					)}
-					<Panel
-						id="explorer"
-						order={2}
-						minSize={minSize}
-					>
+					<Panel id="explorer" order={2} minSize={minSize}>
 						{activeTable ? (
-							<ExplorerPaneLazy
-								activeTable={activeTable}
-								onCreateRecord={openCreator}
-							/>
+							<ExplorerPaneLazy activeTable={activeTable} onCreateRecord={openCreator} />
 						) : (
 							<Introduction
 								title="Explorer"
@@ -189,39 +167,31 @@ export function ExplorerView() {
 									`,
 								}}
 							>
-								<Text>
-									The explorer view provides an easy way to browse your tables and
-									records without writing any queries.
-								</Text>
-								<Group>
-									<Button
+								<ChakraText>
+									The explorer view provides an easy way to browse your tables and records without writing any queries.
+								</ChakraText>
+								<ButtonGroup>
+									<ChakraButton
 										flex={1}
-										variant="gradient"
-										leftSection={<Icon path={iconPlus} />}
+										variant="outline"
 										disabled={!isConnected}
 										onClick={openTableCreator}
 									>
-										Create table
-									</Button>
-									<Button
+										<IconPlus /> Create table
+									</ChakraButton>
+									<ChakraButton
 										flex={1}
-										color="slate"
-										variant="light"
-										rightSection={<Icon path={iconOpen} />}
-										onClick={() =>
-											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealql/statements/define/table",
-											)
-										}
+										variant="outline"
+										onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealql/statements/define/table")}
 									>
-										Learn more
-									</Button>
-								</Group>
+										Learn more <IconOpen />
+									</ChakraButton>
+								</ButtonGroup>
 							</Introduction>
 						)}
 					</Panel>
 				</PanelGroup>
-			</Box>
+			</ChakraBox>
 
 			<CreatorDrawer
 				opened={isCreating}
@@ -230,7 +200,7 @@ export function ExplorerView() {
 				onClose={isCreatingHandle.close}
 			/>
 		</>
-	);
+	)
 }
 
-export default ExplorerView;
+export default ExplorerView

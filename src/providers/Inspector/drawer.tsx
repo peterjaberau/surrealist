@@ -1,17 +1,8 @@
-import classes from "./style.module.scss"
-
-import { iconArrowLeftFat, iconClose, iconDelete, iconJSON, iconRefresh, iconSearch, iconTransfer } from "~/util/icons"
-
-import { Center, Drawer, Group, Paper, Text, Tabs } from "@mantine/core"
 import { useInputState } from "@mantine/hooks"
 import { useEffect, useState } from "react"
 import { RecordId } from "surrealdb"
-import { ActionButton } from "~/components/ActionButton"
 import { DrawerResizer } from "~/components/DrawerResizer"
-import { Icon } from "~/components/Icon"
 import { CodeInput } from "~/components/Inputs"
-import { PrimaryTitle } from "~/components/PrimaryTitle"
-import { Spacer } from "~/components/Spacer"
 import type { HistoryHandle } from "~/hooks/history"
 import { useSaveable } from "~/hooks/save"
 import { useStable } from "~/hooks/stable"
@@ -23,6 +14,8 @@ import { useConfirmation } from "../Confirmation"
 import { ContentTab } from "./tabs/content"
 import { RelationsTab } from "./tabs/relations"
 import {
+	Center,
+	Text,
 	Drawer as ChakraDrawer,
 	Tabs as ChakraTabs,
 	Icon as ChakraIcon,
@@ -32,9 +25,8 @@ import {
 	HStack,
 	Portal,
 	Stack,
-	SimpleGrid,
-	Card,
 	IconButton,
+	Badge,
 } from "@chakra-ui/react"
 import {
 	LuSearch as IconSearch,
@@ -174,6 +166,9 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 	return (
 		<ChakraDrawer.Root
+			modal={false}
+			closeOnEscape={true}
+			contained={false}
 			open={opened}
 			onOpenChange={(e) => !e && onClose()}
 			placement="end"
@@ -193,17 +188,20 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			// }}
 		>
 			<Portal>
+				{/*<ChakraDrawer.Backdrop />*/}
 				<ChakraDrawer.Positioner>
 					<ChakraDrawer.Content px={6} py={2} maxW={width} width={width}>
 						<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
 						<Stack h="100%">
-							<HStack>
+							<HStack w={'full'}>
 								<HStack flex={1}>
-									<Icon path={iconSearch} />
+									<ChakraIcon size="md" >
+										<IconSearch />
+									</ChakraIcon>
 									<Heading size="xl">Record inspector</Heading>
 								</HStack>
-								<HStack>
-									<Group align="center">
+								<HStack justify="flex-end" >
+									<HStack align="center">
 										{history.canPop && (
 											<IconButton aria-label="Go back" onClick={history.pop}>
 												<IconArrowLeft />
@@ -224,7 +222,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 										</IconButton>
 
 										<CloseButton onClick={onClose} aria-label="Close drawer" />
-									</Group>
+									</HStack>
 								</HStack>
 							</HStack>
 
@@ -236,27 +234,26 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 								onChange={setRecordId}
 								variant="filled"
 								rightSectionWidth={76}
-								classNames={{
-									input: classes.recordInput,
-								}}
 								styles={{
 									input: {
+										fontFamily: 'JetBrains Mono',
+										fontSize: '14px',
 										color: inputColor,
 										borderColor: inputColor,
 									},
 								}}
 								rightSection={
 									currentRecord.isEdge && (
-										<Paper title="This record is an edge" bg="slate" c="bright" px="xs">
+										<Badge>
 											Edge
-										</Paper>
+										</Badge>
 									)
 								}
 							/>
 
 							{currentRecord.exists ? (
 								<ChakraTabs.Root defaultValue="content" variant='outline' asChild>
-									<Stack flex={1}>
+									<Stack flex={1} gap={0}>
 										<ChakraTabs.List>
 											<ChakraTabs.Trigger value="content">
 												Content
@@ -267,7 +264,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 												<IconTransfer />
 											</ChakraTabs.Trigger>
 										</ChakraTabs.List>
-										<ChakraTabs.Content value="content" flex={1}>
+										<ChakraTabs.Content value="content" flex={1} p={0}>
 
 												<ContentTab value={recordBody} error={error} saveHandle={saveHandle} onChange={setRecordBody} />
 
@@ -289,338 +286,3 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		</ChakraDrawer.Root>
 	)
 }
-
-/*
-
-
-<CodeInput
-								mb="xs"
-								value={recordId}
-								onBlur={gotoRecord}
-								onSubmit={gotoRecord}
-								onChange={setRecordId}
-								variant="filled"
-								rightSectionWidth={76}
-								classNames={{
-									input: classes.recordInput,
-								}}
-								styles={{
-									input: {
-										color: inputColor,
-										borderColor: inputColor,
-									},
-								}}
-								rightSection={
-									currentRecord.isEdge && (
-										<Paper title="This record is an edge" bg="slate" c="bright" px="xs">
-											Edge
-										</Paper>
-									)
-								}
-							/>
-
-							{currentRecord.exists ? (
-								<Tabs mt="sm" defaultValue="content" className={classes.tabs} variant="pills" radius="sm">
-									<Tabs.List grow>
-										<Tabs.Tab value="content">
-											Content
-											<Icon path={iconJSON} size={0.85} right />
-										</Tabs.Tab>
-										<Tabs.Tab value="relations">
-											Relations
-											<Icon path={iconTransfer} size={0.85} right />
-										</Tabs.Tab>
-									</Tabs.List>
-
-									<Tabs.Panel value="content">
-										<ContentTab value={recordBody} error={error} saveHandle={saveHandle} onChange={setRecordBody} />
-									</Tabs.Panel>
-
-									<Tabs.Panel value="relations">
-										<RelationsTab isLight={isLight} inputs={currentRecord.inputs} outputs={currentRecord.outputs} />
-									</Tabs.Panel>
-								</Tabs>
-							) : (
-								<Center my="xl">
-									<Text>Record not found in database</Text>
-								</Center>
-							)}
-
-
-
-
-
-
-
-return (
-		<ChakraDrawer.Root
-			open={opened}
-			onOpenChange={(e) => !e && onClose()}
-			placement="end"
-			trapFocus={false}
-		>
-			<Portal>
-				<ChakraDrawer.Backdrop />
-				<ChakraDrawer.Positioner>
-					<ChakraDrawer.Content
-						p={4}
-						height="100%"
-						maxW={width}
-						width={width}
-					>
-						<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
-						<Group mb="md" gap="sm">
-							<PrimaryTitle>
-								<Icon left path={iconSearch} size="sm" />
-								Record inspector
-							</PrimaryTitle>
-
-							<Spacer />
-
-							<Group align="center">
-								{history.canPop && (
-									<IconButton aria-label="Go back" onClick={history.pop}>
-										<Icon path={iconArrowLeftFat} />
-									</IconButton>
-								)}
-
-								<ActionButton
-									disabled={!currentRecord.exists}
-									color="pink.7"
-									label="Delete record"
-									onClick={deleteRecord}
-								>
-									<Icon path={iconDelete} />
-								</ActionButton>
-
-								<ActionButton onClick={refreshRecord} label="Refetch record">
-									<Icon path={iconRefresh} />
-								</ActionButton>
-
-								<ChakraDrawer.CloseTrigger asChild pos="initial">
-									<CloseButton onClick={onClose}/>
-								</ChakraDrawer.CloseTrigger>
-
-
-							</Group>
-						</Group>
-						<CodeInput
-							mb="xs"
-							value={recordId}
-							onBlur={gotoRecord}
-							onSubmit={gotoRecord}
-							onChange={setRecordId}
-							variant="filled"
-							rightSectionWidth={76}
-							classNames={{
-								input: classes.recordInput,
-							}}
-							styles={{
-								input: {
-									fontFamily: "JetBrains Mono",
-									fontSize: "14px",
-									color: inputColor,
-									borderColor: inputColor,
-								},
-							}}
-							rightSection={
-								currentRecord.isEdge && (
-									<Paper title="This record is an edge" bg="slate" c="bright" px="xs">
-										Edge
-									</Paper>
-								)
-							}
-						/>
-
-						{currentRecord.exists ? (
-							<Tabs.Root defaultValue="content" variant="outline">
-								<Tabs.List>
-									<Tabs.Trigger value="content">
-										Content
-										<Icon path={iconJSON} size={0.85} right />
-									</Tabs.Trigger>
-									<Tabs.Trigger value="relations">
-										Relations
-										<Icon path={iconTransfer} size={0.85} right />
-									</Tabs.Trigger>
-								</Tabs.List>
-
-								<Tabs.Content value="content">
-									<Box css={{height: "500px"}}>
-										<ContentTab value={recordBody} error={error} saveHandle={saveHandle} onChange={setRecordBody} />
-									</Box>
-								</Tabs.Content>
-
-								<Tabs.Content value="relations">
-									<RelationsTab isLight={isLight} inputs={currentRecord.inputs} outputs={currentRecord.outputs} />
-								</Tabs.Content>
-							</Tabs.Root>
-						) : (
-							<Center my="xl">
-								<Text>Record not found in database</Text>
-							</Center>
-						)}
-
-					</ChakraDrawer.Content>
-				</ChakraDrawer.Positioner>
-			</Portal>
-		</ChakraDrawer.Root>
-	)
-
-
-
-
-<Drawer
-			opened={opened}
-			onClose={onClose}
-			position="right"
-			trapFocus={false}
-			size={width}
-			styles={{
-				body: {
-					height: "100%",
-					display: "flex",
-					flexDirection: "column",
-				},
-			}}
-		>
-			<DrawerResizer
-				minSize={500}
-				maxSize={1500}
-				onResize={setWidth}
-			/>
-
-			<Group
-				mb="md"
-				gap="sm"
-			>
-				<PrimaryTitle>
-					<Icon
-						left
-						path={iconSearch}
-						size="sm"
-					/>
-					Record inspector
-				</PrimaryTitle>
-
-				<Spacer />
-
-				<Group align="center">
-					{history.canPop && (
-						<ActionButton
-							label="Go back"
-							onClick={history.pop}
-						>
-							<Icon path={iconArrowLeftFat} />
-						</ActionButton>
-					)}
-
-					<ActionButton
-						disabled={!currentRecord.exists}
-						color="pink.7"
-						label="Delete record"
-						onClick={deleteRecord}
-					>
-						<Icon path={iconDelete} />
-					</ActionButton>
-
-					<ActionButton
-						onClick={refreshRecord}
-						label="Refetch record"
-					>
-						<Icon path={iconRefresh} />
-					</ActionButton>
-
-					<ActionButton
-						onClick={onClose}
-						label="Close drawer"
-					>
-						<Icon path={iconClose} />
-					</ActionButton>
-				</Group>
-			</Group>
-
-			<CodeInput
-				mb="xs"
-				value={recordId}
-				onBlur={gotoRecord}
-				onSubmit={gotoRecord}
-				onChange={setRecordId}
-				variant="filled"
-				rightSectionWidth={76}
-				classNames={{
-					input: classes.recordInput,
-				}}
-				styles={{
-					input: {
-						color: inputColor,
-						borderColor: inputColor,
-					},
-				}}
-				rightSection={
-					currentRecord.isEdge && (
-						<Paper
-							title="This record is an edge"
-							bg="slate"
-							c="bright"
-							px="xs"
-						>
-							Edge
-						</Paper>
-					)
-				}
-			/>
-
-			{currentRecord.exists ? (
-				<Tabs
-					mt="sm"
-					defaultValue="content"
-					className={classes.tabs}
-					variant="pills"
-					radius="sm"
-				>
-					<Tabs.List grow>
-						<Tabs.Tab value="content">
-							Content
-							<Icon
-								path={iconJSON}
-								size={0.85}
-								right
-							/>
-						</Tabs.Tab>
-						<Tabs.Tab value="relations">
-							Relations
-							<Icon
-								path={iconTransfer}
-								size={0.85}
-								right
-							/>
-						</Tabs.Tab>
-					</Tabs.List>
-
-					<Tabs.Panel value="content">
-						<ContentTab
-							value={recordBody}
-							error={error}
-							saveHandle={saveHandle}
-							onChange={setRecordBody}
-						/>
-					</Tabs.Panel>
-
-					<Tabs.Panel value="relations">
-						<RelationsTab
-							isLight={isLight}
-							inputs={currentRecord.inputs}
-							outputs={currentRecord.outputs}
-						/>
-					</Tabs.Panel>
-				</Tabs>
-			) : (
-				<Center my="xl">
-					<Text>Record not found in database</Text>
-				</Center>
-			)}
-		</Drawer>
-
-
- */

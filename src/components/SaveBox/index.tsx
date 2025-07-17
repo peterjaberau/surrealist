@@ -1,17 +1,16 @@
-import { Button, Group, type GroupProps, Notification, Portal } from "@mantine/core";
+import {  Notification } from "@mantine/core";
 import { clsx } from "clsx";
+import { Button, ButtonGroup, HStack, Portal } from "@chakra-ui/react"
 import { capitalize } from "radash";
 import type { ReactNode } from "react";
 import type { SaveableHandle } from "~/hooks/save";
-import { iconCheck, iconHelp } from "~/util/icons";
-import { Icon } from "../Icon";
-import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
+import { LuCheck as IconCheck, LuInfo as IconHelp } from "react-icons/lu"
 
 export interface SaveBoxProps {
 	handle: SaveableHandle;
 	inline?: boolean;
-	inlineProps?: GroupProps;
+	inlineProps?: any;
 	minimal?: boolean;
 	withApply?: boolean;
 	position?: "left" | "center" | "right";
@@ -37,23 +36,22 @@ export function SaveBox({
 }: SaveBoxProps) {
 	const saveButton = (
 		<Button
-			miw={100}
-			rightSection={<Icon path={iconCheck} />}
-			variant="gradient"
+			minWidth={100}
+			variant="outline"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={() => handle.save(false)}
 		>
-			{saveText ?? (minimal ? "Save changes" : "Save")}
+			{saveText ?? (minimal ? "Save changes" : "Save")} <IconCheck />
 		</Button>
 	);
 
 	const applyButton = (
 		<Button
-			miw={100}
+			minWidth={100}
 			px="xl"
-			color="slate"
-			variant="light"
+			colorPalette="gray"
+			variant="outline"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={() => handle.save(true)}
@@ -67,8 +65,8 @@ export function SaveBox({
 			px="xl"
 			disabled={!handle.isChanged}
 			onClick={handle.revert}
-			color="slate"
-			variant="light"
+			colorPalette="gray"
+			variant="outline"
 		>
 			{revertText ?? (minimal ? "Revert" : "Revert changes")}
 		</Button>
@@ -76,22 +74,26 @@ export function SaveBox({
 
 	if (inline) {
 		return (
-			<Group
+			<HStack
 				gap={10}
-				{...inlineProps}
+				w={'full'}
+
 			>
-				{revertButton}
-				{!minimal && <Spacer />}
+				<HStack w={'full'}>
+					{revertButton}
+				</HStack>
 
-				{(withApply || !minimal) && (
-					<>
-						{withApply && applyButton}
-						{saveButton}
-					</>
-				)}
+				<HStack w={'full'} justify="flex-end">
+					{(withApply || !minimal) && (
+						<>
+							{withApply && applyButton}
+							{saveButton}
+						</>
+					)}
 
-				{!withApply && minimal && saveButton}
-			</Group>
+					{!withApply && minimal && saveButton}
+				</HStack>
+			</HStack>
 		);
 	}
 
@@ -105,11 +107,7 @@ export function SaveBox({
 					!handle.isChanged && classes.saveboxHidden,
 				)}
 				icon={
-					<Icon
-						path={iconHelp}
-						size="lg"
-						mr={-8}
-					/>
+					<IconHelp />
 				}
 				styles={{
 					icon: {
@@ -121,19 +119,21 @@ export function SaveBox({
 					},
 				}}
 			>
-				<Group
-					gap={10}
-					align="center"
+				<HStack
+					justify="space-between"
+					alignItems="center"
+					flex={1}
+					w={'full'}
 				>
-					There are unsaved changes
-					<Spacer />
-					{revertButton}
-					<Spacer />
-					<Button.Group>
+					<HStack>
+						There are unsaved changes
+						{revertButton}
+					</HStack>
+					<ButtonGroup>
 						{withApply && applyButton}
 						{saveButton}
-					</Button.Group>
-				</Group>
+					</ButtonGroup>
+				</HStack>
 			</Notification>
 		</Portal>
 	);
